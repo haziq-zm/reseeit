@@ -4,8 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { InsightsPanel } from "@/components/InsightsPanel";
 import { ItemTable } from "@/components/ItemTable";
-import type { ReceiptWithItems } from "@/lib/types";
+import type { AlternativeBlock, Insight, ReceiptWithItems } from "@/lib/types";
 import { useEffect, useMemo, useState } from "react";
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -18,6 +19,9 @@ export default function ReceiptDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const [suggestionsByItem, setSuggestionsByItem] = useState<Record<string, string[]>>({});
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [alternatives, setAlternatives] = useState<AlternativeBlock[]>([]);
+  const [recLoading, setRecLoading] = useState(true);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["receipt", id],
@@ -30,18 +34,25 @@ export default function ReceiptDetailPage() {
   useEffect(() => {
     if (!receipt?.items.length) return;
     let cancelled = false;
+    setRecLoading(true);
     (async () => {
       try {
         const res = await fetch("/api/recommendations", { method: "POST" });
         const j = await res.json();
-        if (cancelled || !j.alternatives) return;
+        if (cancelled) return;
+
+        setInsights(j.insights ?? []);
+        setAlternatives(j.alternatives ?? []);
+
         const map: Record<string, string[]> = {};
-        for (const a of j.alternatives as { item: string; suggestions: string[] }[]) {
+        for (const a of (j.alternatives ?? []) as AlternativeBlock[]) {
           map[a.item] = a.suggestions;
         }
         setSuggestionsByItem(map);
       } catch {
         /* optional enrichment */
+      } finally {
+        if (!cancelled) setRecLoading(false);
       }
     })();
     return () => {
@@ -128,6 +139,15 @@ export default function ReceiptDetailPage() {
       <section className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
         <h2 className="label-min mb-5">Line items</h2>
         <ItemTable items={receipt.items} suggestionsByItem={suggestionsByItem} />
+      </section>
+
+      <section className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
+        <h2 className="label-min mb-4">Insights & savings</h2>
+        <InsightsPanel
+          insights={insights}
+          alternatives={alternatives}
+          loading={recLoading}
+        />
       </section>
     </div>
   );

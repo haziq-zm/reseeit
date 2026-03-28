@@ -1,4 +1,5 @@
 import { BudgetBar } from "@/components/BudgetBar";
+import { DashboardInsights } from "@/components/DashboardInsights";
 import { ReceiptCard } from "@/components/ReceiptCard";
 import { computeBudget, summarizeCategories } from "@/lib/dashboard-mock";
 import { listReceiptsWithItems } from "@/lib/db";
@@ -47,6 +48,11 @@ export default async function DashboardPage() {
           </ul>
         </section>
       )}
+
+      <section className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
+        <h2 className="label-min mb-4">Insights & savings</h2>
+        <DashboardInsights />
+      </section>
 
       <section className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
         <h2 className="label-min mb-5">Receipts</h2>
