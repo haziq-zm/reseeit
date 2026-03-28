@@ -66,28 +66,28 @@ export function UploadCamera({ onFileReady }: Props) {
         <button
           type="button"
           onClick={() => openPicker(true)}
-          className="flex-1 min-w-[140px] rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-emerald-500 active:scale-[0.98]"
+          className="flex-1 min-w-[140px] rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-cream shadow hover:bg-charcoal active:scale-[0.98] dark:bg-sand dark:text-ink dark:hover:bg-wheat"
         >
           Use camera
         </button>
         <button
           type="button"
           onClick={() => openPicker(false)}
-          className="flex-1 min-w-[140px] rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+          className="flex-1 min-w-[140px] rounded-xl border border-wheat bg-cream px-4 py-3 text-sm font-semibold text-ink hover:bg-sand/60 dark:border-wheat/25 dark:bg-charcoal dark:text-sand dark:hover:bg-ink/80"
         >
           Choose file
         </button>
       </div>
       {preview && (
-        <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className="overflow-hidden rounded-xl border border-wheat dark:border-wheat/20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={preview}
             alt="Receipt preview"
-            className="max-h-72 w-full object-contain bg-slate-100 dark:bg-slate-950"
+            className="max-h-72 w-full object-contain bg-sand/40 dark:bg-ink"
           />
           {name && (
-            <p className="truncate px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+            <p className="truncate px-3 py-2 text-xs text-ink/50 dark:text-sand/60">
               {name}
             </p>
           )}

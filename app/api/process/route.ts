@@ -1,16 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import { categorizeItem } from "@/lib/categorizer";
-import { insertReceiptWithItems } from "@/lib/db";
-import { extractText } from "@/lib/ocr";
-import { mockParsedReceipt, parseReceipt } from "@/lib/parser";
 
 export const runtime = "nodejs";
-export const maxDuration = 120;
 
-type Body = { imageUrl?: string; forceMock?: boolean };
+type Body = { imageUrl?: string };
+
+/** Mock receipt shape for UI development — no OCR, no persistence. */
+function getMockParsedReceipt() {
+  const date = new Date().toISOString().slice(0, 10);
+  return {
+    merchant: "Demo Store",
+    date,
+    items: [
+      { name: "Milk", price: 60 },
+      { name: "Bread", price: 40 },
+    ],
+    total: 100,
+  };
+}
 
 /**
- * Full pipeline: OCR → parse → categorize → persist receipt + line items.
+ * POST /api/process
+ *
+ * Accepts JSON: { imageUrl: string }
+ * Returns a fixed mock parsed receipt (image URL is accepted for API shape only).
+ * No OCR and no database writes — UI development only.
  */
 export async function POST(req: NextRequest) {
   let body: Body;
@@ -22,40 +35,14 @@ export async function POST(req: NextRequest) {
 
   const imageUrl = body.imageUrl?.trim();
   if (!imageUrl) {
-    return NextResponse.json({ error: "imageUrl required" }, { status: 400 });
+    return NextResponse.json({ error: "imageUrl is required" }, { status: 400 });
   }
 
-  let text = "";
-  try {
-    if (!body.forceMock) {
-      text = await extractText(imageUrl);
-    }
-  } catch (e) {
-    console.error("OCR failed, using mock parser path", e);
-  }
+  const parsed = getMockParsedReceipt();
 
-  const parsed =
-    !text || text.length < 5 ? mockParsedReceipt() : parseReceipt(text);
-
-  const itemsWithCategories = parsed.items.map((i) => ({
-    name: i.name,
-    price: i.price,
-    quantity: i.quantity ?? 1,
-    category: categorizeItem(i.name),
-  }));
-
-  try {
-    const saved = await insertReceiptWithItems(parsed, imageUrl, itemsWithCategories);
-    return NextResponse.json({
-      receipt: saved,
-      ocrPreview: text.slice(0, 500),
-      usedMock: !text || text.length < 5,
-    });
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Save failed" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({
+    parsed,
+    imageUrl,
+    mock: true,
+  });
 }

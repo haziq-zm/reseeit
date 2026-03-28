@@ -59,13 +59,13 @@ export default function ReceiptDetailPage() {
   }, [imageSrc]);
 
   if (isLoading) {
-    return <p className="text-slate-600 dark:text-slate-400">Loading receipt…</p>;
+    return <p className="text-ink/60 dark:text-sand/70">Loading receipt…</p>;
   }
   if (error || !receipt) {
     return (
-      <p className="text-rose-600 dark:text-rose-400">
+      <p className="text-ink dark:text-sand">
         Could not load this receipt.{" "}
-        <Link href="/" className="underline">
+        <Link href="/" className="underline decoration-wheat underline-offset-2">
           Back home
         </Link>
       </p>
@@ -76,26 +76,26 @@ export default function ReceiptDetailPage() {
     <div className="space-y-6 font-[family-name:var(--font-geist-sans)]">
       <Link
         href="/"
-        className="text-sm text-emerald-600 hover:underline dark:text-emerald-400"
+        className="text-sm text-ink/80 underline decoration-wheat underline-offset-2 hover:opacity-80 dark:text-sand"
       >
         ← Dashboard
       </Link>
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-ink dark:text-sand">
           {receipt.merchant}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-ink/55 dark:text-sand/65">
           {receipt.date} · Total ₹{Number(receipt.total).toLocaleString("en-IN")}
         </p>
       </div>
 
       {imageSrc && supabaseHost.endsWith("supabase.co") && (
-        <div className="relative aspect-[3/4] max-h-80 w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="relative aspect-[3/4] max-h-80 w-full overflow-hidden rounded-xl border border-wheat dark:border-wheat/20">
           <Image
             src={imageSrc}
             alt="Receipt"
             fill
-            className="object-contain bg-slate-100 dark:bg-slate-950"
+            className="object-contain bg-sand/40 dark:bg-ink"
             sizes="(max-width: 768px) 100vw, 640px"
           />
         </div>
@@ -105,12 +105,12 @@ export default function ReceiptDetailPage() {
         <img
           src={imageSrc}
           alt="Receipt"
-          className="max-h-80 w-full rounded-xl border border-slate-200 object-contain dark:border-slate-800"
+          className="max-h-80 w-full rounded-xl border border-wheat object-contain dark:border-wheat/20"
         />
       )}
 
       <section>
-        <h2 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">Items</h2>
+        <h2 className="mb-2 text-lg font-semibold text-ink dark:text-sand">Items</h2>
         <ItemTable items={receipt.items} suggestionsByItem={suggestionsByItem} />
       </section>
     </div>

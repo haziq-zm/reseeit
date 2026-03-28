@@ -12,6 +12,12 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        /** Beige + black theme */
+        cream: "#FBF9F5",
+        sand: "#F0E8DC",
+        wheat: "#D4C4B0",
+        ink: "#0A0A0A",
+        charcoal: "#1C1B19",
       },
     },
   },

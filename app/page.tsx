@@ -106,10 +106,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 font-[family-name:var(--font-geist-sans)]">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-ink dark:text-sand">
           Dashboard
         </h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-1 text-sm text-ink/65 dark:text-sand/75">
           Weekly budget, receipts, and AI-powered savings ideas.
         </p>
       </div>
@@ -126,18 +126,18 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-ink dark:text-sand">
               Category mix (7 days)
             </h2>
           </div>
-          <ul className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <ul className="space-y-2 rounded-xl border border-wheat bg-cream p-4 dark:border-wheat/20 dark:bg-charcoal">
             {categoryWeekEntries.length === 0 && (
-              <li className="text-sm text-slate-500 dark:text-slate-400">No data yet.</li>
+              <li className="text-sm text-ink/50 dark:text-sand/60">No data yet.</li>
             )}
             {categoryWeekEntries.map(([cat, amt]) => (
               <li
                 key={cat}
-                className="flex items-center justify-between text-sm text-slate-700 dark:text-slate-200"
+                className="flex items-center justify-between text-sm text-ink/85 dark:text-sand"
               >
                 <span>{cat}</span>
                 <span className="font-medium tabular-nums">₹{amt.toFixed(0)}</span>
@@ -145,17 +145,17 @@ export default function DashboardPage() {
             ))}
           </ul>
 
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-ink dark:text-sand">
             Monthly analytics
           </h2>
-          <ul className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <ul className="space-y-2 rounded-xl border border-wheat bg-cream p-4 dark:border-wheat/20 dark:bg-charcoal">
             {categoryMonthEntries.length === 0 && (
-              <li className="text-sm text-slate-500 dark:text-slate-400">No data this month.</li>
+              <li className="text-sm text-ink/50 dark:text-sand/60">No data this month.</li>
             )}
             {categoryMonthEntries.map(([cat, amt]) => (
               <li
                 key={cat}
-                className="flex items-center justify-between text-sm text-slate-700 dark:text-slate-200"
+                className="flex items-center justify-between text-sm text-ink/85 dark:text-sand"
               >
                 <span>{cat}</span>
                 <span className="font-medium tabular-nums">₹{amt.toFixed(0)}</span>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                 void refetchRec();
               }}
               disabled={recFetching}
-              className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-cream hover:bg-charcoal disabled:opacity-50 dark:bg-sand dark:text-ink dark:hover:bg-wheat"
             >
               {recFetching ? "Refreshing…" : "Refresh Exa suggestions"}
             </button>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 
       <section>
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-ink dark:text-sand">
             Recent receipts
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -197,12 +197,12 @@ export default function DashboardPage() {
               placeholder="Search merchant…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full min-w-[160px] flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-900 dark:text-white sm:max-w-xs"
+              className="w-full min-w-[160px] flex-1 rounded-lg border border-wheat bg-cream px-3 py-2 text-sm text-ink placeholder:text-ink/40 dark:border-wheat/25 dark:bg-charcoal dark:text-sand sm:max-w-xs"
             />
             <button
               type="button"
               onClick={() => downloadCsv(exportRows)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="rounded-lg border border-wheat px-3 py-2 text-xs font-semibold text-ink hover:bg-sand/50 dark:border-wheat/25 dark:text-sand dark:hover:bg-ink/60"
             >
               Export CSV
             </button>
@@ -214,9 +214,9 @@ export default function DashboardPage() {
           ))}
         </div>
         {filteredReceipts.length === 0 && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-ink/55 dark:text-sand/65">
             No receipts match.{" "}
-            <a href="/upload" className="text-emerald-600 underline dark:text-emerald-400">
+            <a href="/upload" className="text-ink underline decoration-wheat underline-offset-2 dark:text-sand">
               Upload one
             </a>
             .

@@ -7,20 +7,18 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptWithItems }) {
   return (
     <Link
       href={`/receipt/${receipt.id}`}
-      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-700"
+      className="block rounded-xl border border-wheat bg-cream p-4 shadow-sm transition hover:border-ink/30 hover:shadow-md dark:border-wheat/20 dark:bg-charcoal dark:hover:border-sand/40"
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="font-semibold text-slate-900 dark:text-white">
-            {receipt.merchant}
-          </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{dateLabel}</p>
+          <p className="font-semibold text-ink dark:text-sand">{receipt.merchant}</p>
+          <p className="text-xs text-ink/50 dark:text-sand/60">{dateLabel}</p>
         </div>
-        <p className="shrink-0 text-lg font-bold text-emerald-600 dark:text-emerald-400">
+        <p className="shrink-0 text-lg font-bold text-ink dark:text-sand">
           ₹{Number(receipt.total).toLocaleString("en-IN")}
         </p>
       </div>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-2 text-sm text-ink/65 dark:text-sand/75">
         {receipt.items.length} line item{receipt.items.length === 1 ? "" : "s"}
       </p>
     </Link>
