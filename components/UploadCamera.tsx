@@ -1,28 +1,48 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
   onFileReady: (file: File) => void;
 };
 
 /**
- * Mobile-first: camera capture + gallery/file pick with live preview.
+ * Mobile-first: camera capture + file/gallery pick with live preview.
  */
 export function UploadCamera({ onFileReady }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
+
+  const setPreviewUrl = useCallback((url: string | null) => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+    if (url) previewUrlRef.current = url;
+    setPreview(url);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const f = e.target.files?.[0];
       if (!f) return;
       setName(f.name);
-      setPreview(URL.createObjectURL(f));
+      const url = URL.createObjectURL(f);
+      setPreviewUrl(url);
       onFileReady(f);
+      e.target.value = "";
     },
-    [onFileReady]
+    [onFileReady, setPreviewUrl]
   );
 
   const openPicker = (useCamera: boolean) => {

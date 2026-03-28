@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { categorizeItem } from "@/lib/categorizer";
-import { insertReceiptWithItems, isSupabaseConfigured } from "@/lib/db";
+import { insertReceiptWithItems } from "@/lib/db";
 import { extractText } from "@/lib/ocr";
 import { mockParsedReceipt, parseReceipt } from "@/lib/parser";
 
@@ -13,13 +13,6 @@ type Body = { imageUrl?: string; forceMock?: boolean };
  * Full pipeline: OCR → parse → categorize → persist receipt + line items.
  */
 export async function POST(req: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: "Supabase is not configured" },
-      { status: 503 }
-    );
-  }
-
   let body: Body;
   try {
     body = await req.json();

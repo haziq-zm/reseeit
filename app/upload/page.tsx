@@ -1,56 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { UploadCamera } from "@/components/UploadCamera";
 
 export default function UploadPage() {
-  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
 
   const onFileReady = useCallback((f: File) => {
     setFile(f);
     setErr(null);
-    setStatus(null);
+    setInfo(null);
   }, []);
 
-  const submit = async () => {
+  const logFile = () => {
     if (!file) {
       setErr("Choose or capture an image first.");
       return;
     }
-    setBusy(true);
     setErr(null);
-    setStatus("Uploading…");
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const up = await fetch("/api/upload", { method: "POST", body: fd });
-      const upJson = await up.json();
-      if (!up.ok) throw new Error(upJson.error || "Upload failed");
-
-      setStatus("Reading receipt & saving…");
-      const proc = await fetch("/api/process", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: upJson.url }),
-      });
-      const procJson = await proc.json();
-      if (!proc.ok) throw new Error(procJson.error || "Process failed");
-
-      setStatus(procJson.usedMock ? "Saved (demo data — OCR was thin)." : "Saved!");
-      if (procJson.receipt?.id) {
-        router.push(`/receipt/${procJson.receipt.id}`);
-      }
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Something went wrong");
-      setStatus(null);
-    } finally {
-      setBusy(false);
-    }
+    // Dev-only visibility: open DevTools → Console to inspect the File.
+    console.log("[upload] File object:", file);
+    console.log("[upload] Metadata:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+    setInfo("Logged to the browser console (open DevTools → Console).");
   };
 
   return (
@@ -58,7 +36,8 @@ export default function UploadPage() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Upload receipt</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Preview, then submit. We run OCR, parse line items, categorize, and store in Supabase.
+          Capture with your camera or choose a file, preview it, then log it to the console. OCR is not
+          wired up yet.
         </p>
       </div>
 
@@ -69,23 +48,18 @@ export default function UploadPage() {
           {err}
         </p>
       )}
-      {status && (
-        <p className="text-sm text-emerald-700 dark:text-emerald-400">{status}</p>
+      {info && (
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">{info}</p>
       )}
 
       <button
         type="button"
-        disabled={busy || !file}
-        onClick={submit}
+        disabled={!file}
+        onClick={logFile}
         className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white shadow hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-10"
       >
-        {busy ? "Working…" : "Submit receipt"}
+        Log file to console
       </button>
-
-      <p className="text-xs text-slate-500 dark:text-slate-400">
-        Tip: For a quick demo without readable text, the parser falls back to sample grocery + ride
-        items.
-      </p>
     </div>
   );
 }

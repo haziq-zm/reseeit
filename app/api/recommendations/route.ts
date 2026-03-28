@@ -10,14 +10,6 @@ export const maxDuration = 60;
  * Runs analyzer + Exa cheaper-alternative search for flagged expensive items.
  */
 export async function POST() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({
-      insights: [],
-      alternatives: [],
-      note: "Supabase not configured",
-    });
-  }
-
   try {
     const receipts = await listReceiptsWithItems(200);
     const flatItems = receipts.flatMap((r) =>
@@ -58,7 +50,11 @@ export async function POST() {
       });
     }
 
-    return NextResponse.json({ insights, alternatives });
+    return NextResponse.json({
+      insights,
+      alternatives,
+      ...(!isSupabaseConfigured() && { mock: true as const }),
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json(

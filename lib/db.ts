@@ -1,4 +1,9 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import {
+  getMockReceiptById,
+  getMockReceiptsList,
+  insertMockReceiptWithItems,
+} from "./mock-store";
 import type { ItemRow, ParsedReceipt, ReceiptRow, ReceiptWithItems } from "./types";
 
 /** Weekly budget in INR (MVP hardcoded per spec) */
@@ -46,6 +51,10 @@ export async function insertReceiptWithItems(
   imageUrl: string | null,
   itemsWithCategories: { name: string; price: number; quantity: number; category: string }[]
 ): Promise<ReceiptWithItems> {
+  if (!isSupabaseConfigured()) {
+    return insertMockReceiptWithItems(parsed, imageUrl, itemsWithCategories);
+  }
+
   const supabase = getSupabase();
   const userId = getDemoUserId();
 
@@ -92,6 +101,10 @@ export async function insertReceiptWithItems(
 export async function listReceiptsWithItems(
   limit = 50
 ): Promise<ReceiptWithItems[]> {
+  if (!isSupabaseConfigured()) {
+    return getMockReceiptsList().slice(0, limit);
+  }
+
   const supabase = getSupabase();
   const userId = getDemoUserId();
 
@@ -127,6 +140,10 @@ export async function listReceiptsWithItems(
 }
 
 export async function getReceiptById(id: string): Promise<ReceiptWithItems | null> {
+  if (!isSupabaseConfigured()) {
+    return getMockReceiptById(id);
+  }
+
   const supabase = getSupabase();
   const userId = getDemoUserId();
 

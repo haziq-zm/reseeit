@@ -17,18 +17,6 @@ function startOfMonth(d = new Date()) {
  * Weekly budget progress, category totals (7d + month), raw aggregates for charts.
  */
 export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({
-      weeklyBudget: WEEKLY_BUDGET_INR,
-      weeklySpent: 0,
-      progress: 0,
-      remaining: WEEKLY_BUDGET_INR,
-      categoryWeek: {},
-      categoryMonth: {},
-      insightsPreview: { insights: [], flaggedItems: [] },
-    });
-  }
-
   try {
     const receipts = await listReceiptsWithItems(200);
     const now = Date.now();
@@ -94,6 +82,7 @@ export async function GET() {
       categoryWeek,
       categoryMonth,
       insightsPreview: analysis,
+      ...(!isSupabaseConfigured() && { mock: true as const }),
     });
   } catch (e) {
     console.error(e);

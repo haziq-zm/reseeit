@@ -1,58 +1,101 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDemoUserId, getSupabase, isSupabaseConfigured } from "@/lib/db";
+import { storeMockImage } from "@/lib/mock-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+] as const;
+const MAX_SIZE = 12 * 1024 * 1024; // 12 MB
+
 /**
- * POST multipart/form-data: field "file" — uploads to Supabase Storage bucket `receipts`.
+ * POST /api/upload
+ *
+ * Accepts: multipart/form-data with a single `file` field (image).
+ * Stores the image in Supabase Storage bucket `receipts`.
+ * Returns: { path, url } where url is the public URL of the stored image.
+ *
+ * Falls back to in-memory mock storage when Supabase env vars are missing.
  */
 export async function POST(req: NextRequest) {
-  if (!isSupabaseConfigured()) {
+  // --- Parse multipart body ---
+  let form: FormData;
+  try {
+    form = await req.formData();
+  } catch {
     return NextResponse.json(
-      { error: "Supabase is not configured. Set SUPABASE_URL and keys." },
-      { status: 503 }
+      { error: "Request must be multipart/form-data" },
+      { status: 400 }
     );
   }
 
-  const form = await req.formData();
   const file = form.get("file");
   if (!(file instanceof Blob)) {
-    return NextResponse.json({ error: "Missing file field" }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing "file" field in form data' },
+      { status: 400 }
+    );
   }
 
+  // --- Validate type ---
+  const contentType = (file as File).type || "image/jpeg";
+  if (!ALLOWED_TYPES.includes(contentType as typeof ALLOWED_TYPES[number])) {
+    return NextResponse.json(
+      {
+        error: `Unsupported image type "${contentType}". Allowed: ${ALLOWED_TYPES.join(", ")}`,
+      },
+      { status: 400 }
+    );
+  }
+
+  // --- Validate size ---
   const buf = Buffer.from(await file.arrayBuffer());
   if (buf.length === 0) {
     return NextResponse.json({ error: "Empty file" }, { status: 400 });
   }
-  if (buf.length > 12 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 12MB)" }, { status: 400 });
+  if (buf.length > MAX_SIZE) {
+    return NextResponse.json(
+      { error: `File too large (${(buf.length / 1024 / 1024).toFixed(1)} MB). Max ${MAX_SIZE / 1024 / 1024} MB.` },
+      { status: 400 }
+    );
   }
 
+  // --- Mock fallback (no Supabase) ---
+  if (!isSupabaseConfigured()) {
+    const id = storeMockImage(buf, contentType);
+    const url = `${req.nextUrl.origin}/api/mock-file/${id}`;
+    return NextResponse.json({ path: `mock/${id}`, url, mock: true });
+  }
+
+  // --- Upload to Supabase Storage ---
   const userId = getDemoUserId();
-  const original =
+  const safeName =
     (file as File).name?.replace(/[^a-zA-Z0-9._-]/g, "_") || "receipt.jpg";
-  const path = `${userId}/${Date.now()}-${original}`;
+  const storagePath = `${userId}/${Date.now()}-${safeName}`;
 
   const supabase = getSupabase();
-  const contentType = (file as File).type || "image/jpeg";
 
-  const { error: upErr } = await supabase.storage
+  const { error: uploadError } = await supabase.storage
     .from("receipts")
-    .upload(path, buf, { contentType, upsert: false });
+    .upload(storagePath, buf, { contentType, upsert: false });
 
-  if (upErr) {
-    console.error(upErr);
+  if (uploadError) {
+    console.error("[upload] Supabase Storage error:", uploadError);
     return NextResponse.json(
-      { error: upErr.message || "Upload failed" },
+      { error: uploadError.message || "Upload to storage failed" },
       { status: 500 }
     );
   }
 
-  const { data: pub } = supabase.storage.from("receipts").getPublicUrl(path);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("receipts").getPublicUrl(storagePath);
 
-  return NextResponse.json({
-    path,
-    url: pub.publicUrl,
-  });
+  return NextResponse.json({ path: storagePath, url: publicUrl });
 }

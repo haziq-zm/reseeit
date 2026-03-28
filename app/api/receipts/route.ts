@@ -4,12 +4,12 @@ import { isSupabaseConfigured, listReceiptsWithItems } from "@/lib/db";
 export const runtime = "nodejs";
 
 export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ receipts: [], warning: "Supabase not configured" });
-  }
   try {
     const receipts = await listReceiptsWithItems();
-    return NextResponse.json({ receipts });
+    return NextResponse.json({
+      receipts,
+      ...(!isSupabaseConfigured() && { mock: true as const }),
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
