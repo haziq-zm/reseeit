@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#fbf9f5" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0e0d" },
   ],
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
         <Providers>
           <ThemeShell>
             <NavBar />
-            <main className="mx-auto max-w-3xl px-4 py-6 pb-16">{children}</main>
+            <main className="mx-auto max-w-lg px-6 py-10 pb-28">{children}</main>
           </ThemeShell>
         </Providers>
       </body>

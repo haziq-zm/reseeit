@@ -95,85 +95,87 @@ export default function UploadPage() {
     phase === "uploading"
       ? "Uploading…"
       : phase === "processing"
-        ? "Parsing (mock)…"
-        : "Upload & preview parse";
+        ? "Parsing…"
+        : "Upload & parse receipt";
 
   return (
-    <div className="space-y-6 font-[family-name:var(--font-geist-sans)]">
-      <div>
-        <h1 className="text-2xl font-bold text-ink dark:text-sand">
+    <div className="space-y-8 font-[family-name:var(--font-geist-sans)]">
+      <header className="space-y-3">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink dark:text-sand">
           Upload receipt
         </h1>
-        <p className="mt-1 text-sm text-ink/65 dark:text-sand/75">
-          Upload an image, then we run a mock &quot;parse&quot; (no OCR) so you can build the UI.
+        <p className="max-w-md text-[0.9375rem] leading-relaxed text-ink/60 dark:text-sand/65">
+          Capture or select an image. It will be stored securely; parsing below uses sample data until
+          OCR is enabled.
         </p>
+      </header>
+
+      <div className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
+        <p className="label-min mb-4">Image</p>
+        <UploadCamera onFileReady={onFileReady} />
       </div>
 
-      <UploadCamera onFileReady={onFileReady} />
-
       {err && (
-        <p className="rounded-lg border border-wheat bg-sand/60 px-3 py-2 text-sm text-ink dark:border-wheat/30 dark:bg-ink/50 dark:text-sand">
+        <div
+          className="rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm leading-relaxed text-ink dark:border-clay/25 dark:bg-clay/15 dark:text-sand"
+          role="alert"
+        >
           {err}
-        </p>
+        </div>
       )}
 
       {result && (
-        <div className="space-y-2 rounded-xl border border-wheat bg-sand/40 p-4 dark:border-wheat/25 dark:bg-ink/40">
-          <p className="text-sm font-medium text-ink dark:text-sand">
-            Uploaded successfully{result.mock ? " (mock storage)" : ""}
+        <div className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
+          <p className="label-min mb-3">Stored image</p>
+          <p className="text-sm leading-relaxed text-ink/65 dark:text-sand/70">
+            {result.mock && (
+              <span className="mr-2 inline-block rounded-md bg-honey/25 px-2 py-0.5 text-xs font-medium text-ink dark:text-sand">
+                Demo storage
+              </span>
+            )}
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all font-medium text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent dark:text-accent-muted"
+            >
+              {result.url}
+            </a>
           </p>
-          <dl className="space-y-1 text-xs text-ink/75 dark:text-sand/80">
-            <div className="flex gap-2">
-              <dt className="font-medium">Path:</dt>
-              <dd className="truncate">{result.path}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="font-medium">URL:</dt>
-              <dd className="truncate">
-                <a
-                  href={result.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-wheat underline-offset-2 hover:opacity-80"
-                >
-                  {result.url}
-                </a>
-              </dd>
-            </div>
-          </dl>
+          <p className="mt-2 font-mono text-xs text-ink/40 dark:text-sand/45">{result.path}</p>
         </div>
       )}
 
       {parsed && (
-        <div className="rounded-xl border border-wheat bg-cream p-4 shadow-sm dark:border-wheat/20 dark:bg-charcoal">
-          <p className="mb-3 text-sm font-semibold text-ink dark:text-sand">
-            Parsed receipt (mock)
-          </p>
-          <dl className="mb-4 space-y-1 text-sm text-ink/85 dark:text-sand">
+        <div className="rounded-2xl border border-wheat/70 bg-gradient-to-br from-accent-soft/40 to-cream/90 p-5 shadow-soft dark:border-wheat/12 dark:from-accent/10 dark:to-charcoal/80 dark:shadow-soft-dark">
+          <p className="label-min mb-4">Parsed preview (mock)</p>
+          <dl className="grid gap-4 text-sm sm:grid-cols-3">
             <div>
-              <span className="font-medium text-ink/50 dark:text-sand/60">Merchant: </span>
-              {parsed.merchant}
+              <dt className="text-xs font-medium text-ink/45 dark:text-sand/50">Merchant</dt>
+              <dd className="mt-1 font-semibold text-ink dark:text-sand">{parsed.merchant}</dd>
             </div>
             <div>
-              <span className="font-medium text-ink/50 dark:text-sand/60">Date: </span>
-              {parsed.date}
+              <dt className="text-xs font-medium text-ink/45 dark:text-sand/50">Date</dt>
+              <dd className="mt-1 text-ink dark:text-sand">{parsed.date}</dd>
             </div>
             <div>
-              <span className="font-medium text-ink/50 dark:text-sand/60">Total: </span>
-              <span className="tabular-nums">₹{parsed.total}</span>
+              <dt className="text-xs font-medium text-ink/45 dark:text-sand/50">Total</dt>
+              <dd className="mt-1 text-lg font-semibold tabular-nums text-accent dark:text-accent-muted">
+                ₹{parsed.total}
+              </dd>
             </div>
           </dl>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink/50 dark:text-sand/60">
-            Items
-          </p>
-          <ul className="divide-y divide-wheat rounded-lg border border-wheat dark:divide-wheat/15 dark:border-wheat/15">
+          <p className="label-min mb-3 mt-8">Line items</p>
+          <ul className="divide-y divide-wheat/70 rounded-xl border border-wheat/60 bg-cream/80 dark:divide-wheat/10 dark:border-wheat/10 dark:bg-ink/40">
             {parsed.items.map((item, i) => (
               <li
                 key={i}
-                className="flex items-center justify-between px-3 py-2 text-sm text-ink dark:text-sand"
+                className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
               >
-                <span>{item.name}</span>
-                <span className="tabular-nums font-medium">₹{item.price}</span>
+                <span className="text-ink dark:text-sand">{item.name}</span>
+                <span className="font-medium tabular-nums text-accent dark:text-accent-muted">
+                  ₹{item.price}
+                </span>
               </li>
             ))}
           </ul>
@@ -184,7 +186,7 @@ export default function UploadPage() {
         type="button"
         disabled={!file || busy}
         onClick={uploadAndProcess}
-        className="w-full rounded-xl bg-ink py-3 text-sm font-semibold text-cream shadow hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50 dark:bg-sand dark:text-ink dark:hover:bg-wheat sm:w-auto sm:px-10"
+        className="btn-primary w-full sm:w-auto"
       >
         {buttonLabel}
       </button>

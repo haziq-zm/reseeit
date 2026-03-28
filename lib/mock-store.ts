@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { MOCK_RECEIPTS } from "./dashboard-mock";
 import type { ItemRow, ParsedReceipt, ReceiptRow, ReceiptWithItems } from "./types";
 
 function demoUserId(): string {
@@ -11,84 +12,11 @@ const mockImages = new Map<string, { buffer: Buffer; contentType: string }>();
 /** Persisted mock receipts (used when Supabase env is missing) */
 let mockReceipts: ReceiptWithItems[] | null = null;
 
-function daysAgoIso(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  return d.toISOString().slice(0, 10);
-}
-
 function seedReceipts(): ReceiptWithItems[] {
-  const userId = demoUserId();
-  const r1: ReceiptRow = {
-    id: randomUUID(),
-    user_id: userId,
-    merchant: "Reliance Fresh",
-    date: daysAgoIso(2),
-    total: 890,
-    image_url: "https://placehold.co/400x600/f1f5f9/334155?text=Grocery+Receipt",
-    created_at: new Date().toISOString(),
-  };
-  const items1: ItemRow[] = [
-    {
-      id: randomUUID(),
-      receipt_id: r1.id,
-      name: "Milk 1L",
-      category: "Groceries",
-      price: 56,
-      quantity: 2,
-    },
-    {
-      id: randomUUID(),
-      receipt_id: r1.id,
-      name: "Basmati Rice 5kg",
-      category: "Groceries",
-      price: 620,
-      quantity: 1,
-    },
-    {
-      id: randomUUID(),
-      receipt_id: r1.id,
-      name: "Uber Ride",
-      category: "Transport",
-      price: 120,
-      quantity: 1,
-    },
-  ];
-  r1.total = items1.reduce((s, i) => s + Number(i.price) * (i.quantity || 1), 0);
-
-  const r2: ReceiptRow = {
-    id: randomUUID(),
-    user_id: userId,
-    merchant: "Zara",
-    date: daysAgoIso(5),
-    total: 2499,
-    image_url: "https://placehold.co/400x600/fae8ff/6b21a8?text=Fashion",
-    created_at: new Date().toISOString(),
-  };
-  const items2: ItemRow[] = [
-    {
-      id: randomUUID(),
-      receipt_id: r2.id,
-      name: "Cotton Shirt",
-      category: "Clothing",
-      price: 1499,
-      quantity: 1,
-    },
-    {
-      id: randomUUID(),
-      receipt_id: r2.id,
-      name: "Jeans",
-      category: "Clothing",
-      price: 1000,
-      quantity: 1,
-    },
-  ];
-  r2.total = items2.reduce((s, i) => s + Number(i.price) * (i.quantity || 1), 0);
-
-  return [
-    { ...r1, items: items1 },
-    { ...r2, items: items2 },
-  ];
+  return MOCK_RECEIPTS.map((r) => ({
+    ...r,
+    items: r.items.map((i) => ({ ...i })),
+  }));
 }
 
 export function getMockReceiptsList(): ReceiptWithItems[] {

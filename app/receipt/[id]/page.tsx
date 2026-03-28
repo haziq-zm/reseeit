@@ -59,58 +59,74 @@ export default function ReceiptDetailPage() {
   }, [imageSrc]);
 
   if (isLoading) {
-    return <p className="text-ink/60 dark:text-sand/70">Loading receipt…</p>;
+    return (
+      <p className="rounded-xl border border-dashed border-wheat/80 py-12 text-center text-sm text-ink/50 dark:border-wheat/15 dark:text-sand/55">
+        Loading receipt…
+      </p>
+    );
   }
   if (error || !receipt) {
     return (
-      <p className="text-ink dark:text-sand">
-        Could not load this receipt.{" "}
-        <Link href="/" className="underline decoration-wheat underline-offset-2">
-          Back home
+      <div className="rounded-2xl border border-wheat/70 bg-cream/70 p-6 text-center dark:border-wheat/12 dark:bg-charcoal/70">
+        <p className="text-sm leading-relaxed text-ink dark:text-sand">
+          We couldn&apos;t load this receipt.
+        </p>
+        <Link href="/" className="btn-primary mt-4 inline-flex">
+          Back to dashboard
         </Link>
-      </p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6 font-[family-name:var(--font-geist-sans)]">
+    <div className="space-y-8 font-[family-name:var(--font-geist-sans)]">
       <Link
         href="/"
-        className="text-sm text-ink/80 underline decoration-wheat underline-offset-2 hover:opacity-80 dark:text-sand"
+        className="inline-flex text-sm font-medium text-accent transition-colors hover:text-accent-hover dark:text-accent-muted dark:hover:text-sand"
       >
-        ← Dashboard
+        ← Back to dashboard
       </Link>
-      <div>
-        <h1 className="text-2xl font-bold text-ink dark:text-sand">
+
+      <header className="space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink dark:text-sand">
           {receipt.merchant}
         </h1>
-        <p className="text-sm text-ink/55 dark:text-sand/65">
-          {receipt.date} · Total ₹{Number(receipt.total).toLocaleString("en-IN")}
+        <p className="text-[0.9375rem] text-ink/55 dark:text-sand/60">
+          {receipt.date}
+          <span className="mx-2 text-ink/25 dark:text-sand/25">·</span>
+          Total{" "}
+          <span className="font-semibold tabular-nums text-accent dark:text-accent-muted">
+            ₹{Number(receipt.total).toLocaleString("en-IN")}
+          </span>
         </p>
-      </div>
+      </header>
 
       {imageSrc && supabaseHost.endsWith("supabase.co") && (
-        <div className="relative aspect-[3/4] max-h-80 w-full overflow-hidden rounded-xl border border-wheat dark:border-wheat/20">
-          <Image
-            src={imageSrc}
-            alt="Receipt"
-            fill
-            className="object-contain bg-sand/40 dark:bg-ink"
-            sizes="(max-width: 768px) 100vw, 640px"
-          />
+        <div className="overflow-hidden rounded-2xl border border-wheat/70 bg-cream shadow-soft dark:border-wheat/12 dark:bg-charcoal/80 dark:shadow-soft-dark">
+          <div className="relative aspect-[3/4] max-h-80 w-full">
+            <Image
+              src={imageSrc}
+              alt="Receipt"
+              fill
+              className="object-contain object-left-top"
+              sizes="(max-width: 768px) 100vw, 512px"
+            />
+          </div>
         </div>
       )}
       {imageSrc && !supabaseHost.endsWith("supabase.co") && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={imageSrc}
-          alt="Receipt"
-          className="max-h-80 w-full rounded-xl border border-wheat object-contain dark:border-wheat/20"
-        />
+        <div className="overflow-hidden rounded-2xl border border-wheat/70 shadow-soft dark:border-wheat/12 dark:shadow-soft-dark">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageSrc}
+            alt="Receipt"
+            className="max-h-80 w-full object-contain object-left-top"
+          />
+        </div>
       )}
 
-      <section>
-        <h2 className="mb-2 text-lg font-semibold text-ink dark:text-sand">Items</h2>
+      <section className="rounded-2xl border border-wheat/70 bg-cream/70 p-5 shadow-soft dark:border-wheat/12 dark:bg-charcoal/70 dark:shadow-soft-dark">
+        <h2 className="label-min mb-5">Line items</h2>
         <ItemTable items={receipt.items} suggestionsByItem={suggestionsByItem} />
       </section>
     </div>

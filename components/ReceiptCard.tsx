@@ -7,20 +7,23 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptWithItems }) {
   return (
     <Link
       href={`/receipt/${receipt.id}`}
-      className="block rounded-xl border border-wheat bg-cream p-4 shadow-sm transition hover:border-ink/30 hover:shadow-md dark:border-wheat/20 dark:bg-charcoal dark:hover:border-sand/40"
+      className="group mb-3 block rounded-2xl border border-wheat/80 bg-cream/80 p-4 shadow-soft transition-all hover:border-accent/25 hover:shadow-md dark:border-wheat/12 dark:bg-charcoal/80 dark:shadow-soft-dark dark:hover:border-accent-muted/35"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="font-semibold text-ink dark:text-sand">{receipt.merchant}</p>
-          <p className="text-xs text-ink/50 dark:text-sand/60">{dateLabel}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-ink group-hover:text-accent dark:text-sand dark:group-hover:text-accent-muted">
+            {receipt.merchant}
+          </p>
+          <p className="mt-1 text-sm text-ink/50 dark:text-sand/55">
+            {dateLabel}
+            <span className="text-ink/30 dark:text-sand/35"> · </span>
+            {receipt.items.length} item{receipt.items.length === 1 ? "" : "s"}
+          </p>
         </div>
-        <p className="shrink-0 text-lg font-bold text-ink dark:text-sand">
+        <p className="shrink-0 rounded-lg bg-accent-soft px-2.5 py-1 text-sm font-semibold tabular-nums text-accent dark:bg-accent/20 dark:text-accent-muted">
           ₹{Number(receipt.total).toLocaleString("en-IN")}
         </p>
       </div>
-      <p className="mt-2 text-sm text-ink/65 dark:text-sand/75">
-        {receipt.items.length} line item{receipt.items.length === 1 ? "" : "s"}
-      </p>
     </Link>
   );
 }

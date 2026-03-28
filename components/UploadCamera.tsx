@@ -6,9 +6,6 @@ type Props = {
   onFileReady: (file: File) => void;
 };
 
-/**
- * Mobile-first: camera capture + file/gallery pick with live preview.
- */
 export function UploadCamera({ onFileReady }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
@@ -55,39 +52,39 @@ export function UploadCamera({ onFileReady }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <input
         ref={inputRef}
         type="file"
         className="hidden"
         onChange={handleChange}
       />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={() => openPicker(true)}
-          className="flex-1 min-w-[140px] rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-cream shadow hover:bg-charcoal active:scale-[0.98] dark:bg-sand dark:text-ink dark:hover:bg-wheat"
+          className="btn-primary min-h-[44px] flex-1 sm:flex-none"
         >
-          Use camera
+          Take photo
         </button>
         <button
           type="button"
           onClick={() => openPicker(false)}
-          className="flex-1 min-w-[140px] rounded-xl border border-wheat bg-cream px-4 py-3 text-sm font-semibold text-ink hover:bg-sand/60 dark:border-wheat/25 dark:bg-charcoal dark:text-sand dark:hover:bg-ink/80"
+          className="btn-secondary min-h-[44px] flex-1 sm:flex-none"
         >
-          Choose file
+          Choose from library
         </button>
       </div>
       {preview && (
-        <div className="overflow-hidden rounded-xl border border-wheat dark:border-wheat/20">
+        <div className="overflow-hidden rounded-2xl border border-wheat/70 bg-cream shadow-soft dark:border-wheat/12 dark:bg-charcoal/80 dark:shadow-soft-dark">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={preview}
             alt="Receipt preview"
-            className="max-h-72 w-full object-contain bg-sand/40 dark:bg-ink"
+            className="max-h-72 w-full object-contain"
           />
           {name && (
-            <p className="truncate px-3 py-2 text-xs text-ink/50 dark:text-sand/60">
+            <p className="border-t border-wheat/50 px-4 py-2.5 text-sm text-ink/50 dark:border-wheat/10 dark:text-sand/55">
               {name}
             </p>
           )}
